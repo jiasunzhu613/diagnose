@@ -54,6 +54,8 @@ type GenerateRequest struct {
 	Context []int `json:"context,omitempty"`
 
 	// Stream specifies whether the response is streaming; it is true by default.
+	// Golang defaults bool json value to False, so by using object, we get a more 
+	// clear indication between having a value and not since with object it will default to nil
 	Stream *bool `json:"stream,omitempty"`
 
 	// Raw set to true means that no formatting will be applied to the prompt.

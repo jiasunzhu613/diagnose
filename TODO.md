@@ -1,0 +1,2 @@
+- [ ] need some kind of module to store user settings, configs, model choice, etc
+- [ ] something to impact the verbosity level maybe?

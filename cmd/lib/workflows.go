@@ -33,6 +33,10 @@ func ExecWorkflow(arg []string) error {
 	// We want to catch error here to pass it into LLM
 	if err := cmd.Run(); err != nil {
 		fmt.Println("======== ERROR OCCURED ========")
+		fmt.Println("Error details:", err.Error())
+		fmt.Println("Remaining buffer in stdout: ", StdoutBuf.String())
+		fmt.Println("Remaining buffer in stderr: ", StderrBuf.String())
+		fmt.Println("======== FIX ========")
 
 		client, clientErr := api.NewOllamaClient(envconfig.BASE_OLLAMA_LOCAL)
 		if clientErr != nil {
@@ -42,7 +46,7 @@ func ExecWorkflow(arg []string) error {
 		// TODO: move this into helper function
 		request := &api.GenerateRequest{
 			Model: envconfig.OLLAMA_QWEN,
-			Prompt: "What is wrong here?\n" + err.Error(),
+			Prompt: "What is wrong here?\n" + err.Error() + StderrBuf.String() + StdoutBuf.String(),
 		}
 		
 		// response := make([]api.GenerateResponse, 0)

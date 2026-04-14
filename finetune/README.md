@@ -1,0 +1,1 @@
+this readme will be dedicated to documenting the usage of a finetuned gwen3-1.7b model for doing code error analysis

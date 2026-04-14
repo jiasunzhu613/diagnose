@@ -3,8 +3,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/jiasunzhu613/diagnose/cmd/lib"
 	"github.com/spf13/cobra"
 )
@@ -15,8 +13,6 @@ var (
 		Short: "execute single command with diagnose",
 		Long: "TODO: this is the longer explanation for exec subcommand",
 		Run: func(cmd *cobra.Command, arg []string) {
-			fmt.Println(arg)
-			fmt.Printf("Runs following command: %v\n", arg)
 			lib.ExecWorkflow(arg)
 		},
 	}
