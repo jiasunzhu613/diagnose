@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"io"
 	"log"
 	"os"
@@ -12,6 +13,11 @@ import (
 	"golang.org/x/term"
 )
 
+var (
+	stdinBuf bytes.Buffer
+	stdoutBuf bytes.Buffer
+)
+
 func test() error {
         // Create arbitrary command.
         c := exec.Command("bash")
@@ -21,6 +27,13 @@ func test() error {
         if err != nil {
                 return err
         }
+
+		stdinMw := io.MultiWriter(ptmx, &stdinBuf)
+		stdoutMw := io.MultiReader(ptmx, &stdoutBuf)
+
+		// Set up reader for ptmx???
+		// ptmxReader := bufio.NewScanner(ptmx)
+		
         // Make sure to close the pty at the end.
         defer func() { _ = ptmx.Close() }() // Best effort.
 
@@ -38,6 +51,7 @@ func test() error {
         defer func() { signal.Stop(ch); close(ch) }() // Cleanup signals when done.
 
         // Set stdin in raw mode.
+		// NOTE: essentially disallow original shell instance to be able to be interacted with (? i think)
         oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
         if err != nil {
                 panic(err)
@@ -46,8 +60,15 @@ func test() error {
 
         // Copy stdin to the pty and the pty to stdout.
         // NOTE: The goroutine will keep reading until the next keystroke before returning.
-        go func() { _, _ = io.Copy(ptmx, os.Stdin) }()
-        _, _ = io.Copy(os.Stdout, ptmx)
+        go func() { _, _ = io.Copy(stdinMw, os.Stdin) }()
+		// go func() {
+		// 	for {
+		// 		time.Sleep(10 * time.Second)
+		// 		fmt.Println("This is stdin: ", stdinBuf.String())
+		// 		fmt.Println("This is stdout: ", stdoutBuf.String())
+		// 	}
+		// }()
+        _, _ = io.Copy(os.Stdout, stdoutMw)
 
         return nil
 }

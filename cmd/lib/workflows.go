@@ -59,3 +59,7 @@ func ExecWorkflow(arg []string) error {
 
 	return nil
 }
+
+func SetupWorkflow() {
+	// TODO:
+}
